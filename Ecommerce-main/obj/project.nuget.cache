@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "d/u9Bko0D0Y=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\msi\\Desktop\\Ecommerce-main\\project.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\msi\\.nuget\\packages\\neo4j.driver\\5.28.4\\neo4j.driver.5.28.4.nupkg.sha512",
+    "C:\\Users\\msi\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

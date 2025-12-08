@@ -1,0 +1,34 @@
+@model project.Models.Gateau
+
+@{
+    ViewData["Title"] = Model?.Nom ?? "Détails du gâteau";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title">@Model.Nom</h2>
+                    <p class="text-muted">@Model.Description</p>
+                    <div class="mb-3">
+                        <span class="badge bg-primary">@Model.Categorie</span>
+                        @if (Model.Stock > 0)
+                        {
+                            <span class="badge bg-success">En stock (@Model.Stock)</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Rupture de stock</span>
+                        }
+                    </div>
+                    <h3 class="text-primary">@Model.Prix.ToString("C")</h3>
+                    <a href="@Url.Action("Index", "Gateau")" class="btn btn-secondary">
+                        ← Retour au catalogue
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

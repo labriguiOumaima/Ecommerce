@@ -1,0 +1,43 @@
+@model IEnumerable<project.Models.Gateau>
+
+    @{
+    ViewData["Title"] = "Catalogue Complet";
+    }
+
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="display-4">Notre Catalogue Complet</h1>
+            <p class="lead">Découvrez tous nos gâteaux artisanaux</p>
+        </div>
+
+        @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning text-center" role="alert">
+            <h4>Aucun gâteau disponible</h4>
+            <p>Il n'y a actuellement aucun gâteau en stock. Revenez plus tard !</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var gateau in Model)
+            {
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@gateau.Nom</h5>
+                        <p class="card-text">@gateau.Description</p>
+                        <p class="card-text"><small>Catégorie: @gateau.Categorie</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="price">@gateau.Prix.ToString("C")</span>
+                            <a asp-controller="Gateau" asp-action="Details" asp-route-id="@gateau.Id" class="btn btn-primary">
+                                Voir détails
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    }
+    </div>
