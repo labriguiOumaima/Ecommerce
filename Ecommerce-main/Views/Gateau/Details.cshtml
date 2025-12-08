@@ -1,34 +1,316 @@
 @model project.Models.Gateau
 
 @{
-    ViewData["Title"] = Model?.Nom ?? "Détails du gâteau";
+    ViewData["Title"] = Model.Nom;
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h2 class="card-title">@Model.Nom</h2>
-                    <p class="text-muted">@Model.Description</p>
-                    <div class="mb-3">
-                        <span class="badge bg-primary">@Model.Categorie</span>
-                        @if (Model.Stock > 0)
-                        {
-                            <span class="badge bg-success">En stock (@Model.Stock)</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-danger">Rupture de stock</span>
-                        }
+<div class="container-fluid py-5" style="background-color: var(--teal-dark); min-height: 100vh;">
+    <div class="container">
+        <div class="row">
+            <!-- Colonne gauche : Images -->
+            <div class="col-lg-5 mb-4">
+                <!-- Image principale -->
+                <div class="main-image-container mb-3">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                    <img src="@Model.ImageUrl" alt="@Model.Nom" class="main-image" id="mainImage">
+                    }
+                    else
+                    {
+                    <div class="image-placeholder">
+                        <i class="bi bi-image" style="font-size: 6rem; color: var(--gold);"></i>
+                        <p style="color: var(--gold-light); margin-top: 1rem;">Image à venir</p>
                     </div>
-                    <h3 class="text-primary">@Model.Prix.ToString("C")</h3>
-                    <a href="@Url.Action("Index", "Gateau")" class="btn btn-secondary">
-                        ← Retour au catalogue
-                    </a>
+                    }
                 </div>
+
+                <!-- Galerie de miniatures -->
+                <div class="thumbnail-gallery">
+                    @for (int i = 1; i <= 8; i++)
+                    {
+                    <div class="thumbnail-item">
+                        <i class="bi bi-image" style="font-size: 2rem; color: var(--gold); opacity: 0.3;"></i>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Colonne droite : Détails -->
+            <div class="col-lg-7">
+                <h1 class="product-title">@Model.Nom</h1>
+
+                <!-- Options de tailles et prix -->
+                <div class="size-options mb-4">
+                    <div class="size-option" data-portions="6" data-price="@(Model.Prix)">
+                        <span class="size-price">@string.Format("{0:C}", Model.Prix)</span>
+                        <span class="size-details">/ 6.5" - 6 portions</span>
+                    </div>
+                    <div class="size-option" data-portions="10" data-price="@(Model.Prix * 1.6m)">
+                        <span class="size-price">@string.Format("{0:C}", Model.Prix * 1.6m)</span>
+                        <span class="size-details">/ 8" - 10 portions</span>
+                    </div>
+                    <div class="size-option" data-portions="15" data-price="@(Model.Prix * 2.4m)">
+                        <span class="size-price">@string.Format("{0:C}", Model.Prix * 2.4m)</span>
+                        <span class="size-details">/ 9" - 15 portions</span>
+                    </div>
+                    <div class="size-option selected" data-portions="20" data-price="@(Model.Prix * 3.2m)">
+                        <span class="size-price">@string.Format("{0:C}", Model.Prix * 3.2m)</span>
+                        <span class="size-details">/ 10" - 20 portions</span>
+                    </div>
+                    <div class="size-option" data-portions="30" data-price="@(Model.Prix * 4.8m)">
+                        <span class="size-price">@string.Format("{0:C}", Model.Prix * 4.8m)</span>
+                        <span class="size-details">/ 12" - 30 portions</span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="product-description mb-4">
+                    <p>@Model.Description</p>
+                    <p class="mt-3" style="font-size: 0.95rem; opacity: 0.8;">
+                        Veuillez noter que nous sommes ouverts du jeudi au dimanche. Toutes les commandes nécessitent un préavis de 24 heures pour une préparation soignée et une livraison à temps.
+                    </p>
+                </div>
+
+                <!-- Sélecteur de quantité et prix -->
+                <div class="quantity-price-section">
+                    <div class="quantity-selector">
+                        <button type="button" class="btn-quantity" onclick="updateQuantity(-1)">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                        <span class="quantity-display" id="quantity">1</span>
+                        <button type="button" class="btn-quantity" onclick="updateQuantity(1)">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+
+                    <div class="total-price" id="totalPrice">
+                        @string.Format("{0:C}", Model.Prix * 3.2m)
+                    </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                @if (Model.Stock > 0)
+                {
+                <form asp-controller="Panier" asp-action="Ajouter" method="post" id="addToCartForm" class="mt-4">
+                    <input type="hidden" name="gateauId" value="@Model.Id" />
+                    <input type="hidden" name="quantite" value="1" id="quantiteInput" />
+                    <input type="hidden" name="nombrePersonnes" value="20" id="nombrePersonnesInput" />
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-cart-plus"></i> Ajouter au panier
+                    </button>
+                </form>
+                }
+                else
+                {
+                <div class="alert alert-danger mt-4">
+                    <i class="bi bi-x-circle"></i> Rupture de stock
+                </div>
+                }
+
+                <a href="@Url.Action("Catalogue", "Gateau")" class="btn btn-outline-secondary btn-lg w-100 mt-3">
+                    <i class="bi bi-arrow-left"></i> Retour au catalogue
+                </a>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    .main-image-container {
+        background-color: rgba(245, 245, 220, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        aspect-ratio: 4/3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .main-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-placeholder {
+        text-align: center;
+        padding: 3rem;
+    }
+
+    .thumbnail-gallery {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .thumbnail-item {
+        background-color: rgba(245, 245, 220, 0.05);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 8px;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+        .thumbnail-item:hover {
+            border-color: var(--gold);
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+    .product-title {
+        font-family: 'Playfair Display', serif;
+        color: var(--gold-light);
+        font-size: 2.5rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+        letter-spacing: 1px;
+    }
+
+    .size-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .size-option {
+        background-color: transparent;
+        border: 2px solid rgba(212, 175, 55, 0.3);
+        border-radius: 8px;
+        padding: 15px 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .size-option:hover {
+            border-color: var(--gold);
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+
+        .size-option.selected {
+            border-color: var(--gold);
+            background-color: rgba(212, 175, 55, 0.15);
+        }
+
+    .size-price {
+        color: var(--gold-light);
+        font-size: 1.3rem;
+        font-weight: 600;
+        min-width: 120px;
+    }
+
+    .size-details {
+        color: var(--gold-light);
+        font-size: 1rem;
+        opacity: 0.8;
+    }
+
+    .product-description {
+        color: var(--gold-light);
+        line-height: 1.8;
+        font-size: 1.05rem;
+        padding: 1.5rem 0;
+        border-top: 1px solid rgba(212, 175, 55, 0.2);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .quantity-price-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 0;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .btn-quantity {
+        width: 50px;
+        height: 50px;
+        border: 2px solid var(--gold-light);
+        background-color: transparent;
+        color: var(--gold-light);
+        border-radius: 8px;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+        .btn-quantity:hover {
+            background-color: var(--gold-light);
+            color: var(--teal-dark);
+        }
+
+    .quantity-display {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--gold-light);
+        min-width: 50px;
+        text-align: center;
+    }
+
+    .total-price {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--gold-light);
+        font-family: 'Playfair Display', serif;
+    }
+
+    .btn-outline-secondary {
+        border-color: var(--gold-light);
+        color: var(--gold-light);
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+</style>
+
+<script>
+    const prixBase = @Model.Prix;
+    let selectedPortions = 20;
+    let quantite = 1;
+    let prixUnitaire = prixBase * 3.2; // Prix pour 20 portions
+
+    // Gestion de la sélection de taille
+    document.querySelectorAll('.size-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+
+            selectedPortions = parseInt(this.dataset.portions);
+            prixUnitaire = parseFloat(this.dataset.price);
+
+            document.getElementById('nombrePersonnesInput').value = selectedPortions;
+            updatePrice();
+        });
+    });
+
+    function updateQuantity(change) {
+        quantite += change;
+        if (quantite < 1) quantite = 1;
+        if (quantite > 10) quantite = 10;
+
+        document.getElementById('quantity').textContent = quantite;
+        document.getElementById('quantiteInput').value = quantite;
+        updatePrice();
+    }
+
+    function updatePrice() {
+        const total = (prixUnitaire * quantite).toFixed(2);
+        document.getElementById('totalPrice').textContent = total.replace('.', ',') + ' €';
+    }
+</script>
