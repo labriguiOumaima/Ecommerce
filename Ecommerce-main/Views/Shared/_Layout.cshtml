@@ -201,11 +201,11 @@
                     <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item">
                             <a class="nav-link" href="/Gateau/Catalogue">Catalogue</a>
+                        </li>
 
-
-                            @if (Context.Session.GetString("ClientEmail") != null)
-        {
-            <!-- Utilisateur CONNECTÉ -->
+                        @if (Context.Session.GetString("ClientEmail") != null)
+                        {
+                            <!-- Utilisateur CONNECTÉ -->
                         <li class="nav-item">
                             <span class="nav-link" style="color: var(--gold) !important; cursor: default;">
                                 <i class="bi bi-person-circle"></i> @Context.Session.GetString("ClientName")
@@ -218,9 +218,9 @@
                                 </button>
                             </form>
                         </li>
-        }
-        else
-        {
+                        }
+                        else
+                        {
  <!-- Utilisateur NON connecté -->
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Connexion</a>
@@ -228,276 +228,289 @@
                         <li class="nav-item ms-3">
                             <a class="nav-link btn btn-outline-light btn-sm" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">S'inscrire</a>
                         </li>
-        }
-
-                            <li class="nav-item ms-2">
-                                <a class="nav-link" asp-controller="Panier" asp-action="Index" style="font-size: 1.2rem;">
-                                    <i class="bi bi-bag"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-
-        <footer class="border-top py-4">
-            <div class="container text-center">
-                <p class="mb-0">&copy; 2025 Cake Shop - Tous droits réservés</p>
-            </div>
-        </footer>
-
-        <!-- Modal Connexion -->
-        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="loginModalLabel">Connexion</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="loginForm">
-                            <div class="mb-3">
-                                <label for="loginEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="loginEmail" name="Email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="loginPassword" class="form-label">Mot de passe</label>
-                                <input type="password" class="form-control" id="loginPassword" name="Password" required minlength="6">
-                            </div>
-                            <div id="loginError" class="alert alert-danger d-none"></div>
-                            <button type="submit" class="btn btn-primary w-100">Se connecter</button>
-                        </form>
-                        <div class="text-center mt-3">
-                            <p class="mb-0" style="color: var(--gold-light);">
-                                Pas encore de compte ?
-                                <a href="#" class="modal-link" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">S'inscrire</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Inscription -->
-        <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="registerModalLabel">S'inscrire</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="registerForm">
-                            <div class="mb-3">
-                                <label for="registerNom" class="form-label">Nom</label>
-                                <input type="text" class="form-control" id="registerNom" name="Nom" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="registerPrenom" class="form-label">Prénom</label>
-                                <input type="text" class="form-control" id="registerPrenom" name="Prenom" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="registerEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="registerEmail" name="Email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="registerPassword" class="form-label">Mot de passe</label>
-                                <input type="password" class="form-control" id="registerPassword" name="Password" required minlength="6">
-                            </div>
-                            <div class="mb-3">
-                                <label for="registerTelephone" class="form-label">Téléphone</label>
-                                <input type="tel"
-                                       class="form-control"
-                                       id="registerTelephone"
-                                       name="Telephone"
-                                       pattern="[0-9]{10}"
-                                       title="Veuillez entrer exactement 10 chiffres"
-                                       maxlength="10"
-                                       placeholder="0612345678"
-                                       required>
-                            </div>
-                            <div id="registerError" class="alert alert-danger d-none"></div>
-                            <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
-                        </form>
-                        <div class="text-center mt-3">
-                            <p class="mb-0" style="color: var(--gold-light);">
-                                Déjà un compte ?
-                                <a href="#" class="modal-link" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Se connecter</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bootstrap JS depuis CDN -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Script personnalisé pour gérer les formulaires -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // Validation téléphone en temps réel - accepte uniquement des chiffres
-                const phoneInput = document.getElementById('registerTelephone');
-
-                if (phoneInput) {
-                    phoneInput.addEventListener('input', function (e) {
-                        // Supprimer tout ce qui n'est pas un chiffre
-                        this.value = this.value.replace(/[^0-9]/g, '');
-
-                        // Limiter à 10 chiffres maximum
-                        if (this.value.length > 10) {
-                            this.value = this.value.slice(0, 10);
                         }
-                    });
-                }
 
-                // Gestion du formulaire de connexion
-                const loginForm = document.getElementById('loginForm');
-                if (loginForm) {
-                    loginForm.addEventListener('submit', async function (e) {
-                        e.preventDefault();
+                        <!-- Icône Panier AVEC badge compteur -->
+                        <li class="nav-item ms-2">
+                            <a class="nav-link position-relative" asp-controller="Panier" asp-action="Index" style="font-size: 1.2rem;">
+                                <i class="bi bi-bag"></i>
+                                @if (Context.Session.GetString("ClientEmail") != null)
+                                {
+                                    var panierCount = Context.Session.GetString("PanierCount");
+                                    var count = !string.IsNullOrEmpty(panierCount) ? int.Parse(panierCount) : 0;
+                                    if (count > 0)
+                                    {
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
+                                    @count
+                                </span>
+                                    }
+                                }
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-                        const formData = {
-                            Email: document.getElementById('loginEmail').value,
-                            Mdp: document.getElementById('loginPassword').value
-                        };
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
 
-                        try {
-                            const response = await fetch('/Auth/Login', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(formData)
-                            });
+    <footer class="border-top py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 Cake Shop - Tous droits réservés</p>
+        </div>
+    </footer>
 
-                            if (response.ok) {
-                                // Succès - fermer le modal et recharger la page
-                                const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                                modal.hide();
-                                window.location.reload();
-                            } else {
-                                // Erreur - afficher le message
-                                const error = await response.text();
-                                document.getElementById('loginError').textContent = error || 'Email ou mot de passe incorrect';
-                                document.getElementById('loginError').classList.remove('d-none');
-                            }
-                        } catch (error) {
-                            console.error('Erreur:', error);
-                            document.getElementById('loginError').textContent = 'Erreur de connexion. Veuillez réessayer.';
+    <!-- Modal Connexion -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Connexion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" name="Email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" id="loginPassword" name="Password" required minlength="6">
+                        </div>
+                        <div id="loginError" class="alert alert-danger d-none"></div>
+                        <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p class="mb-0" style="color: var(--gold-light);">
+                            Pas encore de compte ?
+                            <a href="#" class="modal-link" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">S'inscrire</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Inscription -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerModalLabel">S'inscrire</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label for="registerNom" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="registerNom" name="Nom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPrenom" class="form-label">Prénom</label>
+                            <input type="text" class="form-control" id="registerPrenom" name="Prenom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="registerEmail" name="Email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" id="registerPassword" name="Password" required minlength="6">
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerTelephone" class="form-label">Téléphone</label>
+                            <input type="tel"
+                                   class="form-control"
+                                   id="registerTelephone"
+                                   name="Telephone"
+                                   pattern="[0-9]{10}"
+                                   title="Veuillez entrer exactement 10 chiffres"
+                                   maxlength="10"
+                                   placeholder="0612345678"
+                                   required>
+                        </div>
+                        <div id="registerError" class="alert alert-danger d-none"></div>
+                        <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p class="mb-0" style="color: var(--gold-light);">
+                            Déjà un compte ?
+                            <a href="#" class="modal-link" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Se connecter</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS depuis CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script personnalisé pour gérer les formulaires -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Validation téléphone en temps réel - accepte uniquement des chiffres
+            const phoneInput = document.getElementById('registerTelephone');
+
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function (e) {
+                    // Supprimer tout ce qui n'est pas un chiffre
+                    this.value = this.value.replace(/[^0-9]/g, '');
+
+                    // Limiter à 10 chiffres maximum
+                    if (this.value.length > 10) {
+                        this.value = this.value.slice(0, 10);
+                    }
+                });
+            }
+
+            // Gestion du formulaire de connexion
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    const formData = {
+                        Email: document.getElementById('loginEmail').value,
+                        Mdp: document.getElementById('loginPassword').value
+                    };
+
+                    try {
+                        const response = await fetch('/Auth/Login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(formData)
+                        });
+
+                        if (response.ok) {
+                            // Succès - fermer le modal et recharger la page
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                            modal.hide();
+                            window.location.reload();
+                        } else {
+                            // Erreur - afficher le message
+                            const error = await response.text();
+                            document.getElementById('loginError').textContent = error || 'Email ou mot de passe incorrect';
                             document.getElementById('loginError').classList.remove('d-none');
                         }
-                    });
-                }
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        document.getElementById('loginError').textContent = 'Erreur de connexion. Veuillez réessayer.';
+                        document.getElementById('loginError').classList.remove('d-none');
+                    }
+                });
+            }
 
-                // Gestion du formulaire d'inscription
-                const registerForm = document.getElementById('registerForm');
-                if (registerForm) {
-                    registerForm.addEventListener('submit', async function (e) {
-                        e.preventDefault();
+            // Gestion du formulaire d'inscription
+            const registerForm = document.getElementById('registerForm');
+            if (registerForm) {
+                registerForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
 
-                        const formData = {
-                            Nom: document.getElementById('registerNom').value,
-                            Prenom: document.getElementById('registerPrenom').value,
-                            Email: document.getElementById('registerEmail').value,
-                            Mdp: document.getElementById('registerPassword').value,
-                            Telephone: document.getElementById('registerTelephone').value
-                        };
+                    const formData = {
+                        Nom: document.getElementById('registerNom').value,
+                        Prenom: document.getElementById('registerPrenom').value,
+                        Email: document.getElementById('registerEmail').value,
+                        Mdp: document.getElementById('registerPassword').value,
+                        Telephone: document.getElementById('registerTelephone').value
+                    };
 
-                        try {
-                            const response = await fetch('/Auth/Register', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(formData)
-                            });
+                    try {
+                        const response = await fetch('/Auth/Register', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(formData)
+                        });
 
-                            if (response.ok) {
-                                // Succès - fermer le modal d'inscription
-                                const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
-                                modal.hide();
+                        if (response.ok) {
+                            // Succès - fermer le modal d'inscription
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                            modal.hide();
 
-                                // Afficher un message de succès
-                                alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
+                            // Afficher un message de succès
+                            alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
 
-                                // Ouvrir le modal de connexion
-                                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                                loginModal.show();
-                            } else {
-                                // Erreur - afficher le message
-                                const error = await response.text();
-                                document.getElementById('registerError').textContent = error || 'Erreur lors de l\'inscription';
-                                document.getElementById('registerError').classList.remove('d-none');
-                            }
-                        } catch (error) {
-                            console.error('Erreur:', error);
-                            document.getElementById('registerError').textContent = 'Erreur de connexion. Veuillez réessayer.';
+                            // Ouvrir le modal de connexion
+                            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                            loginModal.show();
+                        } else {
+                            // Erreur - afficher le message
+                            const error = await response.text();
+                            document.getElementById('registerError').textContent = error || 'Erreur lors de l\'inscription';
                             document.getElementById('registerError').classList.remove('d-none');
                         }
-                    });
-                }
-
-                // Réinitialiser les messages d'erreur quand on ouvre un modal
-                document.getElementById('loginModal').addEventListener('show.bs.modal', function () {
-                    document.getElementById('loginError').classList.add('d-none');
-                    document.getElementById('loginForm').reset();
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        document.getElementById('registerError').textContent = 'Erreur de connexion. Veuillez réessayer.';
+                        document.getElementById('registerError').classList.remove('d-none');
+                    }
                 });
+            }
 
-                document.getElementById('registerModal').addEventListener('show.bs.modal', function () {
-                    document.getElementById('registerError').classList.add('d-none');
-                    document.getElementById('registerForm').reset();
-                });
+            // Réinitialiser les messages d'erreur quand on ouvre un modal
+            document.getElementById('loginModal').addEventListener('show.bs.modal', function () {
+                document.getElementById('loginError').classList.add('d-none');
+                document.getElementById('loginForm').reset();
             });
-        </script>
-        <!-- Notification Toast en bas à droite -->
-        @if (TempData["Success"] != null && TempData["GateauNom"] != null)
+
+            document.getElementById('registerModal').addEventListener('show.bs.modal', function () {
+                document.getElementById('registerError').classList.add('d-none');
+                document.getElementById('registerForm').reset();
+            });
+        });
+    </script>
+
+    <!-- Notification Toast en bas à droite -->
+    @if (TempData["Success"] != null && TempData["GateauNom"] != null)
     {
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
-            <div id="successToast" class="toast show" role="alert">
-                <div class="toast-header" style="background-color: var(--gold); color: var(--teal-dark);">
-                    <i class="bi bi-check-circle-fill me-2"></i>
-                    <strong class="me-auto">Succès</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-                </div>
-                <div class="toast-body" style="background-color: var(--teal-dark); color: var(--gold-light); border: 1px solid var(--gold);">
-                    <strong>@TempData["GateauNom"]</strong> a été ajouté au panier !
-                </div>
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+        <div id="successToast" class="toast show" role="alert">
+            <div class="toast-header" style="background-color: var(--gold); color: var(--teal-dark);">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong class="me-auto">Succès</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" style="background-color: var(--teal-dark); color: var(--gold-light); border: 1px solid var(--gold);">
+                <strong>@TempData["GateauNom"]</strong> a été ajouté au panier !
             </div>
         </div>
-        <script>
-            setTimeout(() => {
-                const toast = document.getElementById('successToast');
-                if (toast) toast.classList.remove('show');
-            }, 5000);
-        </script>
+    </div>
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('successToast');
+            if (toast) toast.classList.remove('show');
+        }, 5000);
+    </script>
     }
 
-        @if (TempData["Error"] != null)
+    @if (TempData["Error"] != null)
     {
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
-            <div id="errorToast" class="toast show" role="alert">
-                <div class="toast-header" style="background-color: #dc3545; color: white;">
-                    <i class="bi bi-x-circle-fill me-2"></i>
-                    <strong class="me-auto">Erreur</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-                </div>
-                <div class="toast-body" style="background-color: var(--teal-dark); color: var(--gold-light); border: 1px solid #dc3545;">
-                    @TempData["Error"]
-                </div>
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+        <div id="errorToast" class="toast show" role="alert">
+            <div class="toast-header" style="background-color: #dc3545; color: white;">
+                <i class="bi bi-x-circle-fill me-2"></i>
+                <strong class="me-auto">Erreur</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" style="background-color: var(--teal-dark); color: var(--gold-light); border: 1px solid #dc3545;">
+                @TempData["Error"]
             </div>
         </div>
-        <script>
-            setTimeout(() => {
-                const toast = document.getElementById('errorToast');
-                if (toast) toast.classList.remove('show');
-            }, 5000);
-        </script>
+    </div>
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('errorToast');
+            if (toast) toast.classList.remove('show');
+        }, 5000);
+    </script>
     }
-    </body>
+</body>
 </html>

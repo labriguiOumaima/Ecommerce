@@ -1,12 +1,199 @@
-@{
+@model List<project.Models.ArticlePanier>
+
+    @{
     ViewData["Title"] = "Mon Panier";
-}
+    }
 
-<div class="container mt-4">
-    <h2>Mon Panier</h2>
-    <p class="text-muted">Votre panier est vide pour le moment.</p>
-    <a href="@Url.Action("Index", "Gateau")" class="btn btn-primary">
-        Continuer mes achats
-    </a>
-</div>
+    <div class="container py-5">
+        <h1 class="mb-4" style="font-family: 'Playfair Display', serif; color: var(--gold);">Mon Panier</h1>
 
+        @if (Model == null || !Model.Any())
+    {
+        <!-- Panier vide -->
+        <div class="text-center py-5">
+            <i class="bi bi-cart-x" style="font-size: 5rem; color: var(--gold); opacity: 0.5;"></i>
+            <h3 class="mt-4" style="color: var(--gold-light);">Votre panier est vide</h3>
+            <p style="color: var(--gold-light); opacity: 0.8;">Ajoutez des gâteaux pour commencer votre commande !</p>
+            <a href="@Url.Action("Catalogue", "Gateau")" class="btn btn-primary mt-3">
+                <i class="bi bi-arrow-left"></i> Retour au catalogue
+            </a>
+        </div>
+    }
+    else
+    {
+ <!-- Liste des produits -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card" style="background-color: rgba(15, 52, 58, 0.8); border: 1px solid rgba(212, 175, 55, 0.3);">
+                    <div class="card-body">
+                        <h5 class="card-title" style="color: var(--gold); font-family: 'Playfair Display', serif;">Produits</h5>
+
+                        @foreach (var item in Model)
+                        {
+                        <div class="panier-item mb-4 pb-3" style="border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
+                            <div class="row align-items-center mb-3">
+                                <!-- Image placeholder -->
+                                <div class="col-md-2">
+                                    <div style="background-color: rgba(245, 245, 220, 0.1); border-radius: 8px; padding: 10px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-image" style="font-size: 3rem; color: var(--gold); opacity: 0.3;"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Détails produit -->
+                                <div class="col-md-4">
+                                    <h6 style="color: var(--gold-light); font-weight: 600; margin-bottom: 0.5rem;">@item.NomGateau</h6>
+                                </div>
+
+                                <!-- Prix total ligne -->
+                                <div class="col-md-4 text-end">
+                                    <p style="color: var(--gold); font-weight: 700; font-size: 1.4rem; margin: 0; font-family: 'Playfair Display', serif;">
+                                        @string.Format("{0:C}", item.PrixUnitaire * item.Quantite)
+                                    </p>
+                                </div>
+
+                                <!-- Bouton supprimer -->
+                                <div class="col-md-2 text-end">
+                                    <form asp-controller="Panier" asp-action="Retirer" method="post" style="display: inline;">
+                                        <input type="hidden" name="gateauId" value="@item.GateauId" />
+                                        <input type="hidden" name="nombrePersonnes" value="@item.NombrePersonnes" />
+                                        <button type="submit" class="btn btn-link p-0" style="color: #dc3545;" title="Retirer">
+                                            <i class="bi bi-x-circle" style="font-size: 1.8rem;"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Sélecteurs de portions et quantité -->
+                            <div class="row">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-10">
+                                    <form asp-controller="Panier" asp-action="MettreAJour" method="post" class="update-form">
+                                        <input type="hidden" name="gateauId" value="@item.GateauId" />
+                                        <input type="hidden" name="ancienNombrePersonnes" value="@item.NombrePersonnes" />
+
+                                        <div class="row align-items-center">
+                                            <!-- Sélecteur de portions -->
+                                            <div class="col-md-5">
+                                                <label style="color: var(--gold-light); font-size: 0.9rem; margin-bottom: 0.3rem;">Portions :</label>
+                                                <select name="nombrePersonnes" class="form-select" style="background-color: rgba(15, 52, 58, 0.5); border: 1px solid rgba(212, 175, 55, 0.3); color: var(--gold-light);">
+                                                    <option value="6" selected="@(item.NombrePersonnes == 6)">6 portions (6.5")</option>
+                                                    <option value="10" selected="@(item.NombrePersonnes == 10)">10 portions (8")</option>
+                                                    <option value="15" selected="@(item.NombrePersonnes == 15)">15 portions (9")</option>
+                                                    <option value="20" selected="@(item.NombrePersonnes == 20)">20 portions (10")</option>
+                                                    <option value="30" selected="@(item.NombrePersonnes == 30)">30 portions (12")</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Sélecteur de quantité -->
+                                            <div class="col-md-4">
+                                                <label style="color: var(--gold-light); font-size: 0.9rem; margin-bottom: 0.3rem;">Quantité :</label>
+                                                <div class="d-flex align-items-center">
+                                                    <button type="button" class="btn btn-sm btn-outline-light btn-qty-minus" style="border-color: var(--gold-light); color: var(--gold-light);">
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                    <input type="number" name="quantite" value="@item.Quantite" min="1" max="10" class="form-control text-center mx-2 qty-input" style="width: 60px; background-color: rgba(15, 52, 58, 0.5); border: 1px solid rgba(212, 175, 55, 0.3); color: var(--gold-light);" />
+                                                    <button type="button" class="btn btn-sm btn-outline-light btn-qty-plus" style="border-color: var(--gold-light); color: var(--gold-light);">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Bouton mettre à jour -->
+                                            <div class="col-md-3">
+                                                <label style="color: transparent; font-size: 0.9rem; margin-bottom: 0.3rem;">.</label>
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="bi bi-arrow-repeat"></i> Mettre à jour
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <a href="@Url.Action("Catalogue", "Gateau")" class="btn btn-outline-secondary mt-3">
+                    <i class="bi bi-arrow-left"></i> Continuer mes achats
+                </a>
+            </div>
+
+            <!-- Colonne récapitulatif -->
+            <div class="col-lg-4">
+                <div class="card" style="background-color: rgba(15, 52, 58, 0.8); border: 1px solid rgba(212, 175, 55, 0.3);">
+                    <div class="card-body">
+                        <h5 class="card-title" style="color: var(--gold); font-family: 'Playfair Display', serif; margin-bottom: 1.5rem;">Récapitulatif</h5>
+
+                        <div class="d-flex justify-content-between mb-2" style="color: var(--gold-light);">
+                            <span>Sous-total (@Model.Sum(p => p.Quantite) articles)</span>
+                            <span style="font-weight: 600;">@string.Format("{0:C}", Model.Sum(p => p.PrixUnitaire * p.Quantite))</span>
+                        </div>
+
+                        <hr style="border-color: rgba(212, 175, 55, 0.3); margin: 1.5rem 0;">
+
+                        <div class="d-flex justify-content-between mb-4" style="color: var(--gold); font-size: 1.8rem; font-weight: 700; font-family: 'Playfair Display', serif;">
+                            <span>Total</span>
+                            <span>@string.Format("{0:C}", Model.Sum(p => p.PrixUnitaire * p.Quantite))</span>
+                        </div>
+
+                        <button type="button" class="btn btn-primary w-100 btn-lg mb-3">
+                            <i class="bi bi-check-circle"></i> Valider la commande
+                        </button>
+
+                        <p class="text-center mb-0" style="color: var(--gold-light); font-size: 0.85rem; opacity: 0.8;">
+                            <i class="bi bi-info-circle"></i> Préavis de 24 heures requis
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    </div>
+
+    <style>
+        .panier-item:last-child {
+            border-bottom: none !important;
+        }
+
+        .btn-link:hover {
+            opacity: 0.7;
+        }
+
+        .btn-qty-minus:hover, .btn-qty-plus:hover {
+            background-color: var(--gold-light);
+            color: var(--teal-dark);
+        }
+
+        .form-select:focus, .qty-input:focus {
+            background-color: rgba(15, 52, 58, 0.7);
+            border-color: var(--gold);
+            color: var(--gold-light);
+            box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+        }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gestion des boutons + et -
+        document.querySelectorAll('.btn-qty-minus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('.qty-input');
+                let val = parseInt(input.value);
+                if (val > 1) {
+                    input.value = val - 1;
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-qty-plus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('.qty-input');
+                let val = parseInt(input.value);
+                if (val < 10) {
+                    input.value = val + 1;
+                }
+            });
+        });
+    });
+    </script>
