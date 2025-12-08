@@ -8,5 +8,6 @@
         public decimal Prix { get; set; }
         public int Stock { get; set; }
         public string Categorie { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

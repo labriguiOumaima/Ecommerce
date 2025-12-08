@@ -41,7 +41,7 @@
 
                 <!-- Options de tailles et prix -->
                 <div class="size-options mb-4">
-                    <div class="size-option" data-portions="6" data-price="@(Model.Prix)">
+                    <div class="size-option selected" data-portions="6" data-price="@(Model.Prix)">
                         <span class="size-price">@string.Format("{0:C}", Model.Prix)</span>
                         <span class="size-details">/ 6.5" - 6 portions</span>
                     </div>
@@ -53,7 +53,7 @@
                         <span class="size-price">@string.Format("{0:C}", Model.Prix * 2.4m)</span>
                         <span class="size-details">/ 9" - 15 portions</span>
                     </div>
-                    <div class="size-option selected" data-portions="20" data-price="@(Model.Prix * 3.2m)">
+                    <div class="size-option" data-portions="20" data-price="@(Model.Prix * 3.2m)">
                         <span class="size-price">@string.Format("{0:C}", Model.Prix * 3.2m)</span>
                         <span class="size-details">/ 10" - 20 portions</span>
                     </div>
@@ -84,28 +84,34 @@
                     </div>
 
                     <div class="total-price" id="totalPrice">
-                        @string.Format("{0:C}", Model.Prix * 3.2m)
+                        @string.Format("{0:C}", Model.Prix)
                     </div>
                 </div>
 
-                <!-- Boutons d'action -->
-                @if (Model.Stock > 0)
-                {
+                <!-- Bouton Ajouter au panier -->
                 <form asp-controller="Panier" asp-action="Ajouter" method="post" id="addToCartForm" class="mt-4">
                     <input type="hidden" name="gateauId" value="@Model.Id" />
                     <input type="hidden" name="quantite" value="1" id="quantiteInput" />
-                    <input type="hidden" name="nombrePersonnes" value="20" id="nombrePersonnesInput" />
+                    <input type="hidden" name="nombrePersonnes" value="6" id="nombrePersonnesInput" />
+
+                    @if (Context.Session.GetString("ClientEmail") != null)
+                    {
+                        <!-- Utilisateur CONNECTÉ : formulaire normal -->
                     <button type="submit" class="btn btn-primary btn-lg w-100">
                         <i class="bi bi-cart-plus"></i> Ajouter au panier
                     </button>
+                    }
+                    else
+                    {
+ <!-- Utilisateur NON connecté : afficher le modal de connexion -->
+                    <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="bi bi-cart-plus"></i> Ajouter au panier
+                    </button>
+                    <p class="text-center mt-2" style="color: var(--gold-light); font-size: 0.9rem;">
+                        <i class="bi bi-info-circle"></i> Vous devez être connecté pour ajouter au panier
+                    </p>
+                    }
                 </form>
-                }
-                else
-                {
-                <div class="alert alert-danger mt-4">
-                    <i class="bi bi-x-circle"></i> Rupture de stock
-                </div>
-                }
 
                 <a href="@Url.Action("Catalogue", "Gateau")" class="btn btn-outline-secondary btn-lg w-100 mt-3">
                     <i class="bi bi-arrow-left"></i> Retour au catalogue
@@ -281,9 +287,9 @@
 
 <script>
     const prixBase = @Model.Prix;
-    let selectedPortions = 20;
+    let selectedPortions = 6;
     let quantite = 1;
-    let prixUnitaire = prixBase * 3.2; // Prix pour 20 portions
+    let prixUnitaire = prixBase;
 
     // Gestion de la sélection de taille
     document.querySelectorAll('.size-option').forEach(option => {

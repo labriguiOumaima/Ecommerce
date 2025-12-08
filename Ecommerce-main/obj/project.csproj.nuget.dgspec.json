@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\msi\\Desktop\\Ecommerce-main\\project.csproj": {}
+    "E:\\Ecommerce-main\\project.csproj": {}
   },
   "projects": {
-    "C:\\Users\\msi\\Desktop\\Ecommerce-main\\project.csproj": {
+    "E:\\Ecommerce-main\\project.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\msi\\Desktop\\Ecommerce-main\\project.csproj",
+        "projectUniqueName": "E:\\Ecommerce-main\\project.csproj",
         "projectName": "project",
-        "projectPath": "C:\\Users\\msi\\Desktop\\Ecommerce-main\\project.csproj",
-        "packagesPath": "C:\\Users\\msi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\msi\\Desktop\\Ecommerce-main\\obj\\",
+        "projectPath": "E:\\Ecommerce-main\\project.csproj",
+        "packagesPath": "E:\\NugetPackages",
+        "outputPath": "E:\\Ecommerce-main\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
