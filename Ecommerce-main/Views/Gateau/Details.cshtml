@@ -41,23 +41,23 @@
 
                 <!-- Options de tailles et prix -->
                 <div class="size-options mb-4">
-                    <div class="size-option selected" data-portions="6" data-price="@(Model.Prix)">
+                    <div class="size-option selected" data-portions="6">
                         <span class="size-price">@string.Format("{0:C}", Model.Prix)</span>
                         <span class="size-details">/ 6.5" - 6 portions</span>
                     </div>
-                    <div class="size-option" data-portions="10" data-price="@(Model.Prix * 1.6m)">
+                    <div class="size-option" data-portions="10">
                         <span class="size-price">@string.Format("{0:C}", Model.Prix * 1.6m)</span>
                         <span class="size-details">/ 8" - 10 portions</span>
                     </div>
-                    <div class="size-option" data-portions="15" data-price="@(Model.Prix * 2.4m)">
+                    <div class="size-option" data-portions="15">
                         <span class="size-price">@string.Format("{0:C}", Model.Prix * 2.4m)</span>
                         <span class="size-details">/ 9" - 15 portions</span>
                     </div>
-                    <div class="size-option" data-portions="20" data-price="@(Model.Prix * 3.2m)">
+                    <div class="size-option" data-portions="20">
                         <span class="size-price">@string.Format("{0:C}", Model.Prix * 3.2m)</span>
                         <span class="size-details">/ 10" - 20 portions</span>
                     </div>
-                    <div class="size-option" data-portions="30" data-price="@(Model.Prix * 4.8m)">
+                    <div class="size-option" data-portions="30">
                         <span class="size-price">@string.Format("{0:C}", Model.Prix * 4.8m)</span>
                         <span class="size-details">/ 12" - 30 portions</span>
                     </div>
@@ -96,14 +96,12 @@
 
                     @if (Context.Session.GetString("ClientEmail") != null)
                     {
-                        <!-- Utilisateur CONNECTÉ : formulaire normal -->
                     <button type="submit" class="btn btn-primary btn-lg w-100">
                         <i class="bi bi-cart-plus"></i> Ajouter au panier
                     </button>
                     }
                     else
                     {
- <!-- Utilisateur NON connecté : afficher le modal de connexion -->
                     <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#loginModal">
                         <i class="bi bi-cart-plus"></i> Ajouter au panier
                     </button>
@@ -291,6 +289,15 @@
     let quantite = 1;
     let prixUnitaire = prixBase;
 
+    // Ratios de prix identiques au panier et au controller
+    const ratios = {
+        6: 1,
+        10: 1.6,
+        15: 2.4,
+        20: 3.2,
+        30: 4.8
+    };
+
     // Gestion de la sélection de taille
     document.querySelectorAll('.size-option').forEach(option => {
         option.addEventListener('click', function() {
@@ -298,7 +305,10 @@
             this.classList.add('selected');
 
             selectedPortions = parseInt(this.dataset.portions);
-            prixUnitaire = parseFloat(this.dataset.price);
+
+            // Calculer le prix avec les ratios corrects
+            const ratio = ratios[selectedPortions] || (selectedPortions / 6);
+            prixUnitaire = prixBase * ratio;
 
             document.getElementById('nombrePersonnesInput').value = selectedPortions;
             updatePrice();
@@ -309,7 +319,6 @@
         quantite += change;
         if (quantite < 1) quantite = 1;
         if (quantite > 10) quantite = 10;
-
         document.getElementById('quantity').textContent = quantite;
         document.getElementById('quantiteInput').value = quantite;
         updatePrice();

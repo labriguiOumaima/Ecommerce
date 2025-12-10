@@ -18,7 +18,6 @@ namespace project.Controllers
             _logger = logger;
         }
 
-        // Hasher le mot de passe pour la sécurité
         private string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())
@@ -28,7 +27,7 @@ namespace project.Controllers
             }
         }
 
-        // POST: Auth/Register - Inscription (appelé par le modal)
+        // POST: Auth/Register
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
@@ -52,11 +51,22 @@ namespace project.Controllers
                     return BadRequest("Un compte avec cet email existe déjà");
                 }
 
+                // Générer un ID unique pour le nouveau client
+                var getMaxIdQuery = @"
+                    OPTIONAL MATCH (c:Client)
+                    WITH MAX(c.id) as maxId
+                    RETURN CASE WHEN maxId IS NULL THEN 1 ELSE maxId + 1 END as NextId";
+
+                var maxIdResult = await session.RunAsync(getMaxIdQuery);
+                await maxIdResult.FetchAsync();
+                var newClientId = maxIdResult.Current["NextId"].As<int>();
+
                 // Créer le nouveau client avec mot de passe hashé
                 var hashedPassword = HashPassword(model.Mdp);
 
                 var query = @"
                     CREATE (c:Client {
+                        id: $id,
                         nom: $nom,
                         prenom: $prenom,
                         email: $email,
@@ -65,16 +75,17 @@ namespace project.Controllers
                         adresse: $adresse,
                         dateInscription: datetime()
                     })
-                    RETURN c.nom as Nom, c.prenom as Prenom, c.email as Email, id(c) as ClientId";
+                    RETURN c.id as ClientId, c.nom as Nom, c.prenom as Prenom, c.email as Email";
 
                 var result = await session.RunAsync(query, new
                 {
+                    id = newClientId,
                     nom = model.Nom,
                     prenom = model.Prenom,
                     email = model.Email,
                     mdp = hashedPassword,
                     telephone = model.Telephone,
-                    adresse = "" // Vide par défaut, peut être rempli plus tard
+                    adresse = ""
                 });
 
                 if (await result.FetchAsync())
@@ -87,7 +98,7 @@ namespace project.Controllers
                     HttpContext.Session.SetString("ClientEmail", model.Email);
                     HttpContext.Session.SetString("ClientName", $"{model.Prenom} {model.Nom}");
 
-                    _logger.LogInformation($"Nouveau client créé : {model.Email}");
+                    _logger.LogInformation($"Nouveau client créé : {model.Email} avec ID {clientId}");
                 }
 
                 await session.DisposeAsync();
@@ -100,7 +111,7 @@ namespace project.Controllers
             }
         }
 
-        // POST: Auth/Login - Connexion (appelé par le modal)
+        // POST: Auth/Login
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
@@ -118,7 +129,7 @@ namespace project.Controllers
 
                 var query = @"
                     MATCH (c:Client {email: $email, mdp: $mdp})
-                    RETURN c.nom as Nom, c.prenom as Prenom, c.email as Email, id(c) as ClientId
+                    RETURN c.id as ClientId, c.nom as Nom, c.prenom as Prenom, c.email as Email
                     LIMIT 1";
 
                 var result = await session.RunAsync(query, new
@@ -153,7 +164,7 @@ namespace project.Controllers
             }
         }
 
-        // POST: Auth/Logout - Déconnexion
+        // POST: Auth/Logout
         [HttpPost]
         public IActionResult Logout()
         {

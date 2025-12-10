@@ -20,7 +20,6 @@ namespace project.Controllers
         // GET: Panier/Index - Afficher le panier
         public IActionResult Index()
         {
-            // Récupérer le panier de la session
             var panierJson = HttpContext.Session.GetString("Panier");
             var panier = string.IsNullOrEmpty(panierJson)
                 ? new List<ArticlePanier>()
@@ -35,7 +34,6 @@ namespace project.Controllers
         {
             try
             {
-                // Vérifier si l'utilisateur est connecté
                 var clientEmail = HttpContext.Session.GetString("ClientEmail");
                 if (string.IsNullOrEmpty(clientEmail))
                 {
@@ -45,7 +43,6 @@ namespace project.Controllers
 
                 var session = _neo4jService.GetAsyncSession();
 
-                // Récupérer les infos du gâteau depuis Neo4j
                 var gateauQuery = @"
                     MATCH (g:Gateau)
                     WHERE g.id = $gateauId
@@ -63,54 +60,54 @@ namespace project.Controllers
                 var record = gateauResult.Current;
                 var nomGateau = record["Nom"].As<string>();
                 var prixBase = record["Prix"].As<decimal>();
+                decimal ratio = nombrePersonnes switch
+                {
+                    6 => 1m,
+                    10 => 1.6m,
+                    15 => 2.4m,
+                    20 => 3.2m,
+                    30 => 4.8m,
+                    _ => nombrePersonnes / 6m
+                };
+                var prixUnitaire = prixBase * ratio;
 
-                // Calculer le prix selon le nombre de personnes
-                var prixUnitaire = prixBase * nombrePersonnes / 6;
-
-                // Récupérer le panier de la session
                 var panierJson = HttpContext.Session.GetString("Panier");
                 var panier = string.IsNullOrEmpty(panierJson)
                     ? new List<ArticlePanier>()
                     : JsonSerializer.Deserialize<List<ArticlePanier>>(panierJson) ?? new List<ArticlePanier>();
 
-                // Vérifier si le gâteau existe déjà dans le panier (même gâteau, même nombre de personnes)
                 var existingItem = panier.FirstOrDefault(p => p.GateauId == gateauId && p.NombrePersonnes == nombrePersonnes);
 
                 if (existingItem != null)
                 {
-                    // Augmenter la quantité
                     existingItem.Quantite += quantite;
                 }
                 else
                 {
-                    // Ajouter un nouvel article
                     panier.Add(new ArticlePanier
                     {
                         GateauId = gateauId,
                         NomGateau = nomGateau,
                         Quantite = quantite,
                         NombrePersonnes = nombrePersonnes,
-                        PrixUnitaire = prixUnitaire
+                        PrixUnitaire = prixUnitaire,  // ← VIRGULE AJOUTÉE
+                        PrixBase = prixBase
                     });
                 }
 
-                // Sauvegarder le panier en session
                 var updatedPanierJson = JsonSerializer.Serialize(panier);
                 HttpContext.Session.SetString("Panier", updatedPanierJson);
 
-                // Mettre à jour le compteur (nombre total d'articles)
                 var totalArticles = panier.Sum(p => p.Quantite);
                 HttpContext.Session.SetString("PanierCount", totalArticles.ToString());
 
                 await session.DisposeAsync();
 
-                // Message de succès
                 TempData["Success"] = "Ajouté au panier";
                 TempData["GateauNom"] = nomGateau;
 
                 _logger.LogInformation($"Gâteau {nomGateau} ajouté au panier. Total articles: {totalArticles}");
 
-                // RESTER sur la page Details (ne pas rediriger vers le panier)
                 return RedirectToAction("Details", "Gateau", new { id = gateauId });
             }
             catch (Exception ex)
@@ -127,7 +124,6 @@ namespace project.Controllers
         {
             try
             {
-                // Récupérer le panier
                 var panierJson = HttpContext.Session.GetString("Panier");
                 if (string.IsNullOrEmpty(panierJson))
                 {
@@ -136,7 +132,6 @@ namespace project.Controllers
 
                 var panier = JsonSerializer.Deserialize<List<ArticlePanier>>(panierJson) ?? new List<ArticlePanier>();
 
-                // Retirer l'article
                 var item = panier.FirstOrDefault(p => p.GateauId == gateauId && p.NombrePersonnes == nombrePersonnes);
                 if (item != null)
                 {
@@ -144,11 +139,9 @@ namespace project.Controllers
                     TempData["Success"] = $"{item.NomGateau} retiré du panier";
                 }
 
-                // Sauvegarder
                 var updatedPanierJson = JsonSerializer.Serialize(panier);
                 HttpContext.Session.SetString("Panier", updatedPanierJson);
 
-                // Mettre à jour le compteur
                 var totalArticles = panier.Sum(p => p.Quantite);
                 HttpContext.Session.SetString("PanierCount", totalArticles.ToString());
 
@@ -161,5 +154,87 @@ namespace project.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+        // POST: Panier/MettreAJourAjax
+        [HttpPost]
+        public async Task<IActionResult> MettreAJourAjax([FromBody] UpdatePanierRequest request)
+        {
+            try
+            {
+                var session = _neo4jService.GetAsyncSession();
+                var panierJson = HttpContext.Session.GetString("Panier");
+
+                if (string.IsNullOrEmpty(panierJson))
+                {
+                    return Json(new { success = false });
+                }
+
+                var panier = JsonSerializer.Deserialize<List<ArticlePanier>>(panierJson) ?? new List<ArticlePanier>();
+                var oldItem = panier.FirstOrDefault(p => p.GateauId == request.GateauId && p.NombrePersonnes == request.AncienNombrePersonnes);
+
+                if (oldItem != null)
+                {
+                    var gateauQuery = @"MATCH (g:Gateau) WHERE g.id = $gateauId RETURN g.nom as Nom, g.prix as Prix";
+                    var gateauResult = await session.RunAsync(gateauQuery, new { gateauId = request.GateauId });
+
+                    if (await gateauResult.FetchAsync())
+                    {
+                        var record = gateauResult.Current;
+                        var nomGateau = record["Nom"].As<string>();
+                        var prixBase = record["Prix"].As<decimal>();
+                        decimal ratio = request.NombrePersonnes switch
+                        {
+                            6 => 1m,
+                            10 => 1.6m,
+                            15 => 2.4m,
+                            20 => 3.2m,
+                            30 => 4.8m,
+                            _ => request.NombrePersonnes / 6m
+                        };
+                        var nouveauPrixUnitaire = prixBase * ratio;
+
+                        panier.Remove(oldItem);
+
+                        var existingItem = panier.FirstOrDefault(p => p.GateauId == request.GateauId && p.NombrePersonnes == request.NombrePersonnes);
+                        if (existingItem != null)
+                        {
+                            existingItem.Quantite = request.Quantite;
+                        }
+                        else
+                        {
+                            panier.Add(new ArticlePanier
+                            {
+                                GateauId = request.GateauId,
+                                NomGateau = nomGateau,
+                                Quantite = request.Quantite,
+                                NombrePersonnes = request.NombrePersonnes,
+                                PrixUnitaire = nouveauPrixUnitaire,  // ← VIRGULE AJOUTÉE
+                                PrixBase = prixBase
+                            });
+                        }
+                    }
+                }
+
+                HttpContext.Session.SetString("Panier", JsonSerializer.Serialize(panier));
+                HttpContext.Session.SetString("PanierCount", panier.Sum(p => p.Quantite).ToString());
+
+                await session.DisposeAsync();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erreur mise à jour AJAX: {ex.Message}");
+                return Json(new { success = false });
+            }
+        }
+    }
+
+    // Classe pour la requête AJAX
+    public class UpdatePanierRequest
+    {
+        public int GateauId { get; set; }
+        public int AncienNombrePersonnes { get; set; }
+        public int NombrePersonnes { get; set; }
+        public int Quantite { get; set; }
     }
 }
