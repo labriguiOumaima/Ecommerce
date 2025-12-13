@@ -1,0 +1,150 @@
+@model project.Models.Commande
+
+@{
+    ViewData["Title"] = "Confirmation de commande";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Message de succès -->
+            <div class="text-center mb-5">
+                <div style="width: 80px; height: 80px; background-color: rgba(40, 167, 69, 0.2); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                    <i class="bi bi-check-circle" style="font-size: 3rem; color: #28a745;"></i>
+                </div>
+                <h1 style="font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 0.5rem;">
+                    Commande confirmée !
+                </h1>
+                <p style="color: var(--gold-light); font-size: 1.1rem;">
+                    Merci pour votre commande. Nous avons bien reçu votre demande.
+                </p>
+            </div>
+
+            <!-- Bon de commande -->
+            <div class="card" style="background-color: rgba(15, 52, 58, 0.8); border: 2px solid var(--gold);">
+                <div class="card-body p-4">
+                    <!-- En-tête -->
+                    <div class="text-center mb-4 pb-4" style="border-bottom: 2px solid rgba(212, 175, 55, 0.3);">
+                        <h2 style="font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 0.5rem;">
+                            BON DE COMMANDE
+                        </h2>
+                        <h3 style="font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.5rem;">
+                            Commande #@Model.Id
+                        </h3>
+                        <p style="color: var(--gold-light); opacity: 0.8; margin-top: 1rem;">
+                            <i class="bi bi-calendar3"></i> @Model.DateCommande.ToString("dd/MM/yyyy à HH:mm")
+                        </p>
+                    </div>
+
+                    <!-- Informations client -->
+                    <div class="mb-4 pb-4" style="border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
+                        <h5 style="color: var(--gold); font-family: 'Playfair Display', serif; margin-bottom: 1rem;">
+                            Informations client
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p style="color: var(--gold-light); margin-bottom: 0.5rem;">
+                                    <i class="bi bi-person-fill" style="color: var(--gold);"></i>
+                                    <strong>Nom :</strong> @Model.ClientPrenom @Model.ClientNom
+                                </p>
+                                <p style="color: var(--gold-light); margin-bottom: 0.5rem;">
+                                    <i class="bi bi-envelope-fill" style="color: var(--gold);"></i>
+                                    <strong>Email :</strong> @Model.ClientEmail
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p style="color: var(--gold-light); margin-bottom: 0.5rem;">
+                                    <i class="bi bi-telephone-fill" style="color: var(--gold);"></i>
+                                    <strong>Téléphone :</strong> @Model.ClientTelephone
+                                </p>
+                                <p style="color: var(--gold-light); margin-bottom: 0.5rem;">
+                                    <i class="bi bi-hourglass-split" style="color: var(--gold);"></i>
+                                    <strong>Statut :</strong> <span style="color: #ffc107; font-weight: 600;">@Model.Statut</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Articles commandés -->
+                    <div class="mb-4">
+                        <h5 style="color: var(--gold); font-family: 'Playfair Display', serif; margin-bottom: 1rem;">
+                            Articles commandés
+                        </h5>
+
+                        @foreach (var article in Model.Articles)
+                        {
+                        <div class="row align-items-center mb-3 pb-3" style="border-bottom: 1px solid rgba(212, 175, 55, 0.1);">
+                            <div class="col-md-6">
+                                <h6 style="color: var(--gold-light); font-weight: 600; margin-bottom: 0.3rem;">
+                                    @article.NomGateau
+                                </h6>
+                                <p style="color: var(--gold-light); opacity: 0.7; font-size: 0.9rem; margin: 0;">
+                                    @article.NombrePersonnes portions × @article.Quantite
+                                </p>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <span style="color: var(--gold-light);">
+                                    @string.Format("{0:C}", article.PrixUnitaire) × @article.Quantite
+                                </span>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <span style="color: var(--gold); font-weight: 700; font-size: 1.2rem; font-family: 'Playfair Display', serif;">
+                                    @string.Format("{0:C}", article.PrixUnitaire * article.Quantite)
+                                </span>
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Total -->
+                    <div class="pt-3" style="border-top: 2px solid var(--gold);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 style="color: var(--gold); font-family: 'Playfair Display', serif; margin: 0;">
+                                TOTAL
+                            </h4>
+                            <h3 style="color: var(--gold); font-weight: 700; font-family: 'Playfair Display', serif; margin: 0; font-size: 2rem;">
+                                @string.Format("{0:C}", Model.MontantTotal)
+                            </h3>
+                        </div>
+                    </div>
+
+                    <!-- Note importante -->
+                    <div class="alert mt-4" style="background-color: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); color: var(--gold-light);">
+                        <h6 style="color: var(--gold); margin-bottom: 0.5rem;">
+                            <i class="bi bi-info-circle-fill"></i> Informations importantes
+                        </h6>
+                        <ul style="margin-bottom: 0; padding-left: 1.5rem;">
+                            <li>Votre commande sera prête sous 48 heures minimum</li>
+                           <!-- <li>Nous sommes ouverts du jeudi au dimanche</li> -->
+                            <li>Vous recevrez un email de confirmation à <strong>@Model.ClientEmail</strong></li>
+                            <li>Nous vous contacterons au <strong>@Model.ClientTelephone</strong> pour confirmer les détails</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="text-center mt-4">
+                <button onclick="window.print()" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-printer"></i> Imprimer
+                </button>
+                <a href="@Url.Action("Catalogue", "Gateau")" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Retour au catalogue
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .navbar, footer, .btn, .alert {
+            display: none !important;
+        }
+
+        .card {
+            border: 2px solid #000 !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
