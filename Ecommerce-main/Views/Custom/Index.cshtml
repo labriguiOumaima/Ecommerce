@@ -1,0 +1,238 @@
+@{
+    ViewData["Title"] = "Custom Orders - Choose Your Category";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff5f7 100%);
+            margin: 0;
+            padding: 0;
+        }
+
+        .custom-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .custom-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .custom-header h1 {
+            color: #d63384;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.2);
+        }
+
+        .category-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 3px solid #d63384;
+        }
+
+        .category-content {
+            padding: 25px;
+        }
+
+        .category-title {
+            color: #d63384;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .category-description {
+            color: #666;
+            font-size: 1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .learn-more-btn {
+            background: linear-gradient(135deg, #d63384 0%, #f06292 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .learn-more-btn:hover {
+            background: linear-gradient(135deg, #c2185b 0%, #e91e63 100%);
+            box-shadow: 0 5px 15px rgba(214, 51, 132, 0.3);
+            transform: scale(1.05);
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <text>
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #c3e6cb;
+            text-align: center;
+        }
+            </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <text>
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #f5c6cb;
+            text-align: center;
+        }
+            </text>
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-container">
+        <div class="custom-header">
+            <h1>✨ Create Your Custom Treat ✨</h1>
+            <p>Choose a category and personalize it to your heart's desire!</p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="success-message">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="error-message">
+                @TempData["Error"]
+            </div>
+        }
+
+        <div class="categories-grid">
+            <!-- Cake Category -->
+            <div class="category-card">
+                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500"
+                     alt="Custom Cake"
+                     class="category-image">
+                <div class="category-content">
+                    <h2 class="category-title">🎂 Cake</h2>
+                    <p class="category-description">
+                        Design your dream cake! Choose from various sponge flavors and delicious fillings.
+                        Perfect for birthdays, weddings, or any celebration.
+                    </p>
+                    <a href="@Url.Action("Customize", "Custom", new { category = "Cake" })"
+                       class="learn-more-btn">
+                        Learn More →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Cookies Category -->
+            <div class="category-card">
+                <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500"
+                     alt="Custom Cookies"
+                     class="category-image">
+                <div class="category-content">
+                    <h2 class="category-title">🍪 Cookies</h2>
+                    <p class="category-description">
+                        Customize your cookie box! Select from classic chocolate chip, oatmeal raisin,
+                        or specialty flavors. Perfect for gifts or personal indulgence.
+                    </p>
+                    <a href="@Url.Action("Customize", "Custom", new { category = "Cookies" })"
+                       class="learn-more-btn">
+                        Learn More →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Cupcakes Category -->
+            <div class="category-card">
+                <img src="https://images.unsplash.com/photo-1426869884541-df7117556757?w=500"
+                     alt="Custom Cupcakes"
+                     class="category-image">
+                <div class="category-content">
+                    <h2 class="category-title">🧁 Cupcakes</h2>
+                    <p class="category-description">
+                        Create the perfect cupcake assortment! Mix and match flavors, frostings, and toppings.
+                        Ideal for parties or special events.
+                    </p>
+                    <a href="@Url.Action("Customize", "Custom", new { category = "Cupcakes" })"
+                       class="learn-more-btn">
+                        Learn More →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bento Box Category -->
+            <div class="category-card">
+                <img src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=500"
+                     alt="Custom Bento Box"
+                     class="category-image">
+                <div class="category-content">
+                    <h2 class="category-title">🍱 Bento Box</h2>
+                    <p class="category-description">
+                        Build your ultimate dessert bento box! Combine mini treats, pastries, and sweets
+                        for a delightful variety in one beautiful package.
+                    </p>
+                    <a href="@Url.Action("Customize", "Custom", new { category = "Bento Box" })"
+                       class="learn-more-btn">
+                        Learn More →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

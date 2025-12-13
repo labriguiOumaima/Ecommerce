@@ -1,0 +1,341 @@
+@model project.Models.DemandeCustom
+@{
+    ViewData["Title"] = "Customize Your " + ViewBag.Category;
+    var category = ViewBag.Category as string ?? "Item";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff5f7 100%);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .customize-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            color: #d63384;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #d63384;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .form-group .help-text {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .option-card {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .option-card:hover {
+            border-color: #d63384;
+            background: #fff0f6;
+        }
+
+        .option-card input[type="radio"] {
+            display: none;
+        }
+
+        .option-card input[type="radio"]:checked + label {
+            color: #d63384;
+            font-weight: bold;
+        }
+
+        .option-card.selected {
+            border-color: #d63384;
+            background: #fff0f6;
+            box-shadow: 0 5px 15px rgba(214, 51, 132, 0.2);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #d63384;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #d63384 0%, #f06292 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #c2185b 0%, #e91e63 100%);
+            box-shadow: 0 5px 15px rgba(214, 51, 132, 0.3);
+            transform: scale(1.02);
+        }
+
+        .price-note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="customize-container">
+        <a href="@Url.Action("Index", "Custom")" class="back-btn">← Back to Categories</a>
+
+        <div class="page-header">
+            <h1>Customize Your @category</h1>
+            <p>Make it uniquely yours!</p>
+        </div>
+
+        <div class="price-note">
+            ℹ️ <strong>Note:</strong> This is a custom order. We'll contact you with a price quote after reviewing your selections.
+        </div>
+
+        <form asp-action="SubmitCustomOrder" asp-controller="Custom" method="post" id="customForm">
+            <input type="hidden" name="Categorie" value="@category" />
+
+            <!-- Sponge/Base Selection -->
+            <div class="form-group">
+                <label>
+                    @if (category == "Cake")
+                    {
+                        <text>Choose Your Sponge</text>
+                    }
+                    else if (category == "Cookies")
+                    {
+                        <text>Choose Your Cookie Base</text>
+                    }
+                    else if (category == "Cupcakes")
+                    {
+                        <text>Choose Your Cupcake Base</text>
+                    }
+                    else
+                    {
+                        <text>Choose Your Base</text>
+                    }
+                </label>
+                <div class="help-text">Select your preferred flavor foundation</div>
+
+                <div class="option-grid" id="spongeOptions">
+                    @if (category == "Cake")
+                    {
+                        <div class="option-card" onclick="selectOption(this, 'Vanilla Sponge')">
+                            <div>🍰 Vanilla Sponge</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Chocolate Sponge')">
+                            <div>🍫 Chocolate Sponge</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Red Velvet')">
+                            <div>❤️ Red Velvet</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Rainbow Sponge (+$10 extra)')">
+                            <div>🌈 Rainbow Sponge <small>(+$10)</small></div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Lemon Sponge')">
+                            <div>🍋 Lemon Sponge</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Marble Sponge')">
+                            <div>🎨 Marble Sponge</div>
+                        </div>
+                    }
+                    else if (category == "Cookies")
+                    {
+                        <div class="option-card" onclick="selectOption(this, 'Classic Chocolate Chip')">
+                            <div>🍪 Classic Chocolate Chip</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Oatmeal Raisin')">
+                            <div>🌾 Oatmeal Raisin</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Double Chocolate')">
+                            <div>🍫 Double Chocolate</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'White Chocolate Macadamia')">
+                            <div>⚪ White Chocolate Macadamia</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Peanut Butter')">
+                            <div>🥜 Peanut Butter</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Sugar Cookie')">
+                            <div>✨ Sugar Cookie</div>
+                        </div>
+                    }
+                    else if (category == "Cupcakes")
+                    {
+                        <div class="option-card" onclick="selectOption(this, 'Vanilla Cupcake')">
+                            <div>🧁 Vanilla Cupcake</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Chocolate Cupcake')">
+                            <div>🍫 Chocolate Cupcake</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Red Velvet Cupcake')">
+                            <div>❤️ Red Velvet Cupcake</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Lemon Cupcake')">
+                            <div>🍋 Lemon Cupcake</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Strawberry Cupcake')">
+                            <div>🍓 Strawberry Cupcake</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="option-card" onclick="selectOption(this, 'Assorted Mini Treats')">
+                            <div>🍱 Assorted Mini Treats</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Chocolate Lovers Box')">
+                            <div>🍫 Chocolate Lovers Box</div>
+                        </div>
+                        <div class="option-card" onclick="selectOption(this, 'Fruity Delights Box')">
+                            <div>🍓 Fruity Delights Box</div>
+                        </div>
+                    }
+                </div>
+
+                <input type="text" id="spongeInput" name="SpongeFilling" class="form-control" readonly required
+                       placeholder="Click an option above to select" />
+            </div>
+
+            <!-- Quantity -->
+            <div class="form-group">
+                <label>Quantity</label>
+                <div class="help-text">
+                    @if (category == "Cake")
+                    {
+                        <text>Number of servings (typically 8-12 per tier)</text>
+                    }
+                    else if (category == "Cookies")
+                    {
+                        <text>Number of cookies</text>
+                    }
+                    else if (category == "Cupcakes")
+                    {
+                        <text>Number of cupcakes</text>
+                    }
+                    else
+                    {
+                        <text>Number of boxes</text>
+                    }
+                </div>
+                <input type="number" name="Quantite" class="form-control" min="1" value="1" required />
+            </div>
+
+            <!-- Special Message/Instructions -->
+            <div class="form-group">
+                <label>Special Instructions</label>
+                <div class="help-text">Tell us about any special requests, dietary restrictions, or design preferences</div>
+                <textarea name="Message" class="form-control"
+                          placeholder="Example: 'Happy Birthday Sarah' written on top, no nuts please, pink frosting..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Custom Order 🎉</button>
+        </form>
+    </div>
+
+    <script>
+        function selectOption(card, value) {
+            // Remove selected class from all cards in this group
+            const parent = card.parentElement;
+            parent.querySelectorAll('.option-card').forEach(c => {
+                c.classList.remove('selected');
+            });
+
+            // Add selected class to clicked card
+            card.classList.add('selected');
+
+            // Update hidden input
+            document.getElementById('spongeInput').value = value;
+        }
+
+        // Form validation
+        document.getElementById('customForm').addEventListener('submit', function(e) {
+            const spongeInput = document.getElementById('spongeInput');
+            if (!spongeInput.value) {
+                e.preventDefault();
+                alert('Please select your base/sponge option!');
+            }
+        });
+    </script>
+</body>
+</html>
